@@ -1,0 +1,7 @@
+{
+  "name": "Smart_Park_App",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}

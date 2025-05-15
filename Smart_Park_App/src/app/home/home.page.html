@@ -1,0 +1,27 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>🚗 Parkhaus</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Freie Plätze</ion-card-title>
+      <ion-text color="success">
+        <h1>{{ frei }}</h1>
+      </ion-text>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-label>Status:</ion-label>
+      <h2>
+        <ion-badge color="{{ torOffen ? 'success' : 'danger' }}">
+          {{ torOffen ? '🔓 Offen' : '🔒 Geschlossen' }}
+        </ion-badge>
+      </h2>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-button expand="full" (click)="torAuf()">Tor öffnen</ion-button>
+  <ion-button expand="full" color="danger" (click)="torZu()">Tor schließen</ion-button>
+</ion-content>

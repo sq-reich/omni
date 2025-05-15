@@ -3,8 +3,12 @@ from classes.mojo import Mojo
 from classes.key import Manuell
 import subprocess, os, signal
 from flask import jsonify
+from main import lcd_detected  # neue Variable importieren
+from flask_cors import CORS
+
 
 app = Flask(__name__)
+CORS(app)
 
 # Parkhausmodule
 pk = Mojo()
@@ -17,8 +21,9 @@ main_running = False
 @app.route('/')
 def index():
     frei = pk.get_parkp()
-    status = "offen" if pk.pos >= pk.max_schritte else "geschlossen"
-    return render_template('index.html', frei=frei, status=status, running=main_running)
+    status = "offen" if pk.motor.pos > 0 else "geschlossen"
+    return render_template('index.html', frei=frei, status=status, running=main_running, lcd=lcd_detected)
+
 
 @app.route('/start')
 def start_system():
