@@ -1,6 +1,6 @@
 import smbus2 as smbus
 import time
-
+import random as rnd
 class LCD:
     I2C_ADDR = 0x27
     LCD_WIDTH = 16  # 16 characters per line
@@ -17,6 +17,10 @@ class LCD:
     def __init__(self, bus_number=1):
         self.bus = smbus.SMBus(bus_number)
         self.init_display()
+
+        self.heyMsg = ["Hallo", "Moin", "Willkommen", "Viel Spass!", "Guten Tag"]
+        self.beyMsg = ["Tschüss", "Adios", "Auf Wiedersehen", "Schoenen Tag noch"]
+
 
     def init_display(self):
         """Initialize the LCD display."""

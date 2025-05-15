@@ -2,6 +2,7 @@ from flask import Flask, render_template, redirect, url_for, abort
 from classes.mojo import Mojo
 from classes.key import Manuell
 import subprocess, os, signal
+from flask import jsonify
 
 app = Flask(__name__)
 
@@ -87,3 +88,10 @@ def key_reset():
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
+
+@app.route('/api/status')
+def status():
+    return jsonify({
+        "frei": pk.get_parkp(), 
+        "tor_offen": pk.motor.pos > 0  # Annahme: pos > 0 heißt Tor ist offen
+    })

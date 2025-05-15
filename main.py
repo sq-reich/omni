@@ -3,10 +3,7 @@ from classes.mojo import Mojo
 from classes.key import Manuell
 from classes.Traffic import Traffic
 import RPi.GPIO as gp
-import sys
-import select
-import tty
-import termios
+
 
 # Initialisierung
 pk = Mojo()
@@ -24,20 +21,18 @@ print("🚀 Parkhaussystem gestartet...")
 
 if lcd: lcd.display_two_lines("Parkhaussystem", f"gestartet...",True)
 
-light.red_on()
-
+# Wiederstellensphase 
 pk.auto_recovery()
 
 
+# Start testphase
+light.test_buzz()
+light.test_leds()
 
 if lcd: lcd.display_two_lines("Parkhaus bereit", f"Frei: {pk.get_parkp()}",True)
 sleep(3)
 
-#Start test 
-light.red_on()
-light.danger()
-light.led_off()
-light.green_on()
+
 
 
 try:
@@ -86,11 +81,7 @@ try:
         elif pk.get_parkp() > 0:        
             light.red_on(False,False)
             light.green_on()
-           
-                
-        
-        
-
+                          
         sleep(0.02)
 
 except KeyboardInterrupt:
@@ -100,4 +91,4 @@ except KeyboardInterrupt:
 finally:
     gp.cleanup()
     lcd.clear()
-    pk.tor_zu
+    pk.tor_zu()

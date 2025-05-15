@@ -1,11 +1,32 @@
 <!DOCTYPE html>
 <html lang="de">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Parkhaussteuerung</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    .pulse {
+      animation: pulse-grow 0.5s ease;
+    }
+
+    @keyframes pulse-grow {
+      0% {
+        transform: scale(1);
+      }
+
+      50% {
+        transform: scale(1.2);
+      }
+
+      100% {
+        transform: scale(1);
+      }
+    }
+  </style>
 </head>
+
 <body class="bg-dark text-white text-center p-4">
 
   <div class="container">
@@ -13,28 +34,80 @@
 
     <div class="card bg-secondary text-white mb-4">
       <div class="card-body">
-        <h3>Freie Plätze: <span class="badge bg-success fs-4">{{ frei }}</span></h3>
-        <h5>Schrankenstatus: 
-          {% if status == "offen" %} 
-            <span class="text-success">🟢 Offen</span>
-          {% else %}
-            <span class="text-danger">🔴 Geschlossen</span>
-          {% endif %}
-        </h5>
+        <h2>Freie Plätze: <span id="freiBadge" class="badge bg-success">Lade...</span></h2>
+        <h3>Schrankenstatus: <span id="torStatus" class="badge bg-info">Lade...</span></h3>
       </div>
     </div>
 
     <div class="d-grid gap-3">
       {% if running %}
-        <a href="/stop" class="btn btn-danger btn-lg">🛑 Parkhaus stoppen</a>
+      <a href="/stop" class="btn btn-danger btn-lg">🛑 Parkhaus stoppen</a>
       {% else %}
-        <a href="/start" class="btn btn-success btn-lg">🚀 Parkhaus starten</a>
+      <a href="/start" class="btn btn-success btn-lg">🚀 Parkhaus starten</a>
       {% endif %}
       <a href="/tor-auf" class="btn btn-primary btn-lg">🔓 Tor öffnen</a>
       <a href="/tor-zu" class="btn btn-warning btn-lg">🔒 Tor schließen</a>
       <a href="/key" class="btn btn-outline-light btn-sm mt-3">🔧 Manuelle Steuerung</a>
     </div>
   </div>
+  <audio id="ding" src="beep-07a.mp3" preload="auto"></audio>
+
+
+  <script>
+    async function updateStatus() {
+      try {
+        const res = await fetch('/api/status');
+        const data = await res.json();
+
+        document.getElementById('freiBadge').textContent = data.frei;
+
+        const tor = data.tor_offen ? "🔓 Offen" : "🔒 Geschlossen";
+        const color = data.tor_offen ? "bg-success" : "bg-danger";
+
+        const torElem = document.getElementById('torStatus');
+        torElem.textContent = tor;
+        torElem.className = "badge " + color;
+
+      } catch (e) {
+        console.error("Fehler beim Abrufen des Status", e);
+      }
+    }
+
+    // Aktualisiere alle 3 Sekunden
+    setInterval(updateStatus, 3000);
+    updateStatus();  // Direkt beim Laden
+    let letzterStatus = null;
+
+    async function updateStatus() {
+      try {
+        const res = await fetch('/api/status');
+        const data = await res.json();
+
+        document.getElementById('freiBadge').textContent = data.frei;
+
+        const tor = data.tor_offen ? "🔓 Offen" : "🔒 Geschlossen";
+        const color = data.tor_offen ? "bg-success" : "bg-danger";
+
+        const torElem = document.getElementById('torStatus');
+
+        // 🎵 Wenn sich der Status geändert hat: Ton abspielen
+        if (letzterStatus !== null && letzterStatus !== data.tor_offen) {
+          document.getElementById('ding').play();
+          // 💡 Animation starten
+          torElem.classList.add('pulse');
+          setTimeout(() => torElem.classList.remove('pulse'), 500);
+        }
+
+        torElem.textContent = tor;
+        torElem.className = "badge " + color;
+        letzterStatus = data.tor_offen;
+
+      } catch (e) {
+        console.error("Fehler beim Abrufen des Status", e);
+      }
+    }
+  </script>
 
 </body>
+
 </html>

@@ -3,22 +3,17 @@ import csv
 import os
 from time import sleep, time
 from MotorControler import MotorController  # Neue Importstelle für Motorsteuerung
-import random as rnd
 
-gp.setmode(gp.BCM)
+
+
 
 class Mojo:
     def __init__(self):
         self.motor = MotorController()
 
-        self.heyMsg = ["Hallo", "Moin", "Willkommen", "Viel Spass!", "Guten Tag"]
-        self.beyMsg = ["Tschüss", "Adios", "Auf Wiedersehen", "Schoenen Tag noch"]
+        
 
-        # Sensoren (GPIO 24 = Eingang, GPIO 25 = Ausgang)
-        self.irs_enter = 24
-        self.irs_exit = 25
-        gp.setup([self.irs_enter, self.irs_exit], gp.IN, pull_up_down=gp.PUD_UP)
-
+        
         # Parkplätze
         self.max_pp = 4
         self.min_pp = 0
@@ -38,11 +33,14 @@ class Mojo:
             try:
                 with open("last_parkP.csv", "r") as file:
                     self.parkp = int(next(csv.reader(file))[0])
-                    print(f"🔄 Parkplätze geladen: {self.parkp}")
-            except:
+                    if not (0 <= self.parkp <= self.max_pp):  # Plausibilitätsprüfung
+                        raise ValueError("Unplausibler Parkplatzwert")
+            except Exception as e:
+                print(f"⚠️ Parkplätze konnten nicht geladen werden: {e}")
                 self.parkp = self.max_pp
         else:
             self.parkp = self.max_pp
+    
 
     def add_parkplatz(self):
         if self.parkp < self.max_pp:
@@ -71,7 +69,7 @@ class Mojo:
             timeout = time() + 3
 
             while time() < timeout:
-                if not gp.input(self.irs_exit):
+                if self.motor.is_activeted("b"):
                     self.drop_parkplatz()
                     self.tor_zu()
                     return
@@ -87,7 +85,7 @@ class Mojo:
             timeout = time() + 3
 
             while time() < timeout:
-                if not gp.input(self.irs_enter):
+                if self.motor.is_activeted("a"):
                     self.add_parkplatz()
                     self.tor_zu()
                     return
@@ -101,11 +99,4 @@ class Mojo:
     def get_parkp(self):
         return self.parkp
 
-    def is_activeted(self, val):
-        val = val.lower()
-        if val == "a":
-            return not gp.input(self.irs_enter)
-        elif val == "b":
-            return not gp.input(self.irs_exit)
-        else:
-            return False
+    
