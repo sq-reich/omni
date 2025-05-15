@@ -1,6 +1,5 @@
 from time import sleep, time
 from classes.mojo import Mojo
-from classes.lcd import LCD
 from classes.key import Manuell
 from classes.Traffic import Traffic
 import RPi.GPIO as gp
@@ -11,14 +10,19 @@ import termios
 
 # Initialisierung
 pk = Mojo()
-lcd = LCD()
 light = Traffic()
 
+try:
+    from classes.lcd import LCD
+    lcd = LCD()
+except Exception as e:
+    print(f"⚠️ LCD konnte nicht initialisiert werden: {e}")
+    lcd = None  # Fallback, falls LCD nicht vorhanden
 
 # Startinfo
 print("🚀 Parkhaussystem gestartet...")
 
-lcd.display_two_lines("Parkhaussystem", f"gestartet...",True)
+if lcd: lcd.display_two_lines("Parkhaussystem", f"gestartet...",True)
 
 light.red_on()
 
@@ -26,14 +30,13 @@ pk.auto_recovery()
 
 
 
-lcd.display_two_lines("Parkhaus bereit", f"Frei: {pk.get_parkp()}",True)
+if lcd: lcd.display_two_lines("Parkhaus bereit", f"Frei: {pk.get_parkp()}",True)
 sleep(3)
 
 #Start test 
 light.red_on()
 light.danger()
 light.led_off()
-
 light.green_on()
 
 
@@ -51,13 +54,13 @@ try:
                 light.red_on(False)
                 light.green_on(True,False)
                 light.danger()
-                lcd.display_two_lines("Kein Platz","frei",True)
+                if lcd: lcd.display_two_lines("Kein Platz","frei",True)
                 sleep(2)
                 
             else:
                 light.red_on()
                 light.green_on(False,False)
-                lcd.display_two_lines("Einfahrt erkannt",">>>",True)
+                if lcd: lcd.display_two_lines("Einfahrt erkannt",">>>",True)
                 pk.einfahrt()
             
 
@@ -66,7 +69,7 @@ try:
             
             light.red_on()
             light.green_on(False,False)
-            lcd.display_two_lines("Ausfahrt erkannt","<<<",True)
+            if lcd: lcd.display_two_lines("Ausfahrt erkannt","<<<",True)
             pk.ausfahrt()
 
         
@@ -92,7 +95,7 @@ try:
 
 except KeyboardInterrupt:
     print("\n🚦 Programm manuell beendet.")
-    lcd.display_two_lines("System gestoppt","_x_",True)
+    if lcd: lcd.display_two_lines("System gestoppt","_x_",True)
     sleep(2)
 finally:
     gp.cleanup()
