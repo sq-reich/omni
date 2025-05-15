@@ -45,6 +45,12 @@
       {% else %}
       <a href="/start" class="btn btn-success btn-lg">🚀 Parkhaus starten</a>
       {% endif %}
+      {% if not lcd %}
+      <div class="alert alert-warning mt-3">
+        ⚠️ LCD-Modul nicht erkannt – Ausgabe erfolgt nur über Konsole!
+      </div>
+      {% endif %}
+
       <a href="/tor-auf" class="btn btn-primary btn-lg">🔓 Tor öffnen</a>
       <a href="/tor-zu" class="btn btn-warning btn-lg">🔒 Tor schließen</a>
       <a href="/key" class="btn btn-outline-light btn-sm mt-3">🔧 Manuelle Steuerung</a>
