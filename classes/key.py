@@ -38,6 +38,7 @@ class Manuell:
             writer.writerow([self.pos])
             file.flush()  # Sofort speichern
 
+   
     # Liest die gespeicherte Position
     def load_position(self):
         if os.path.exists("last_pos.csv"):

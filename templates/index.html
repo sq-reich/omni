@@ -13,20 +13,23 @@
 
     <div class="card bg-secondary text-white mb-4">
       <div class="card-body">
-        <h3>Freie Parkplätze: <span class="badge bg-success fs-4">{{ frei }}</span></h3>
-        <h5>Schranke Status: 
-          {% if frei > 0 %} 
-            <span class="text-success">🟢 offen</span>
+        <h3>Freie Plätze: <span class="badge bg-success fs-4">{{ frei }}</span></h3>
+        <h5>Schrankenstatus: 
+          {% if status == "offen" %} 
+            <span class="text-success">🟢 Offen</span>
           {% else %}
-            <span class="text-danger">🔴 geschlossen</span>
+            <span class="text-danger">🔴 Geschlossen</span>
           {% endif %}
         </h5>
       </div>
     </div>
 
     <div class="d-grid gap-3">
-      <a href="/start" class="btn btn-success btn-lg">🚀 Parkhaus starten</a>
-      <a href="/stop" class="btn btn-danger btn-lg">🛑 Parkhaus ausschalten</a>
+      {% if running %}
+        <a href="/stop" class="btn btn-danger btn-lg">🛑 Parkhaus stoppen</a>
+      {% else %}
+        <a href="/start" class="btn btn-success btn-lg">🚀 Parkhaus starten</a>
+      {% endif %}
       <a href="/tor-auf" class="btn btn-primary btn-lg">🔓 Tor öffnen</a>
       <a href="/tor-zu" class="btn btn-warning btn-lg">🔒 Tor schließen</a>
       <a href="/key" class="btn btn-outline-light btn-sm mt-3">🔧 Manuelle Steuerung</a>
