@@ -4,17 +4,17 @@ from classes.key import Manuell
 from classes.Traffic import Traffic
 import RPi.GPIO as gp
 
-
-# Initialisierung
-pk = Mojo()
-light = Traffic()
-
+#initiation of LCD 
 try:
     from classes.lcd import LCD
     lcd = LCD()
+    lcd_detected = True
 except Exception as e:
     print(f"⚠️ LCD konnte nicht initialisiert werden: {e}")
-    lcd = None  # Fallback, falls LCD nicht vorhanden
+    from classes.lcd_safe import NoLCD
+    lcd = NoLCD()
+    lcd_detected = False
+
 
 # Startinfo
 print("🚀 Parkhaussystem gestartet...")
